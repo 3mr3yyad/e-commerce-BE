@@ -143,7 +143,7 @@ export class AuthService {
     })
     await this.customerRepository.update({ _id: customer._id }, { otp, otpExpiry: new Date(Date.now() + 5 * 60 * 1000) });
     return {
-      message: 'OTP sent successfully',
+      message: 'OTP sent successfully, check your email',
       success: true
     };
   }
@@ -159,11 +159,12 @@ export class AuthService {
     if (customer.otpExpiry < new Date()) {
       throw new BadRequestException('OTP expired');
     }
+    const hashedPassword = await bcrypt.hash(resetPasswordDto.password, 10);
     await this.customerRepository.update(
       { _id: customer._id },
-      { password: resetPasswordDto.password, $unset: { otp: "", otpExpiry: "" } });
+      { $set: { password: hashedPassword }, $unset: { otp: "", otpExpiry: "" } });
     return {
-      message: 'Password reset successfully',
+      message: 'Password reset successfully, you can now login',
       success: true
     };
   }
