@@ -1,0 +1,19 @@
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+
+@Schema({
+    timestamps: true,
+    discriminatorKey: 'role',
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+})
+export class Seller{
+    userName:string;
+    email:string;
+    @Prop({type:String,required:true})
+    password?: string;
+    
+    @Prop({type:String,required:true})
+    whatsappLink:string;
+}
+
+export const SellerSchema = SchemaFactory.createForClass(Seller);
