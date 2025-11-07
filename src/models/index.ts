@@ -8,3 +8,6 @@ export * from './admin/admin.repository'
 
 export * from './customer/customer.schema'
 export * from './customer/customer.repository'
+
+export * from './category/category.schema'
+export * from './category/category.repository'
