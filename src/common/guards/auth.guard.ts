@@ -1,5 +1,5 @@
-import { CustomerRepository } from '@/models';
-import { CanActivate, ExecutionContext, Injectable, NotFoundException } from '@nestjs/common';
+import { UserRepository } from '@/models';
+import { CanActivate, ExecutionContext, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PUBLIC } from '../decorators';
@@ -10,12 +10,13 @@ export class AuthGuard implements CanActivate {
     constructor(
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
-        private readonly customerRepository: CustomerRepository,
+        private readonly userRepository: UserRepository,
         private readonly reflector: Reflector
     ) { }
     async canActivate(
         context: ExecutionContext): Promise<boolean>  {
-        const isPublic = this.reflector.get(PUBLIC, context.getHandler());
+        try {
+            const isPublic = this.reflector.get(PUBLIC, context.getHandler());
         if (isPublic) {
             return true;
         }
@@ -26,11 +27,14 @@ export class AuthGuard implements CanActivate {
             secret: this.configService.get('jwt').SECRET_KEY
         });
 
-        const customer = await this.customerRepository.getOne({ _id: payload._id });
-        if (!customer) {
+        const user = await this.userRepository.getOne({ _id: payload._id });
+        if (!user) {
             throw new NotFoundException('User not found');
         }
-        request.user = customer;
+        request.user = user;
         return true;
+        } catch (error) {
+            throw new UnauthorizedException(error.message);
+        }
     }
 }
