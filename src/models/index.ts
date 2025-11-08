@@ -12,3 +12,12 @@ export * from './customer/customer.repository'
 
 export * from './category/category.schema'
 export * from './category/category.repository'
+
+export * from './brand/brand.schema'
+export * from './brand/brand.repository'
+
+// export * from './product/product.schema'
+// export * from './product/product.repository'
+
+// export * from './coupon/coupon.schema'
+// export * from './coupon/coupon.repository'
