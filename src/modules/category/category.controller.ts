@@ -1,12 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Auth, User } from '@/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { AuthGuard, User } from '@/common';
 import { CategoryFactoryService } from './factory';
 
 @Controller('category')
-@UseGuards(AuthGuard)
 export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService,
@@ -14,6 +13,7 @@ export class CategoryController {
   ) { }
 
   @Post()
+  @Auth(['Admin'])
 
   async create(@Body() createCategoryDto: CreateCategoryDto, @User() user: any) {
     const category = this.categoryFactoryService.createCategory(createCategoryDto, user);
