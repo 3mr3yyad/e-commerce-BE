@@ -16,4 +16,11 @@ export class AbstractRepository<T> {
         return this.model.findOneAndUpdate(filter, updateQuery, options);
     }
     
+    public async getMany(
+        filter: RootFilterQuery<T>,
+        projection?: ProjectionType<T>,
+        options?: QueryOptions<T>,
+    ) {
+        return this.model.find(filter, projection, options);
+    }
 }
