@@ -1,4 +1,4 @@
-import { CustomerRepository } from '@/models';
+import { CustomerRepository, UserRepository } from '@/models';
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
@@ -15,6 +15,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
+    private readonly userRepository: UserRepository,
     private readonly customerRepository: CustomerRepository,
     private readonly jwtService: JwtService,
     private readonly oauth2Client: OAuth2Client
@@ -56,29 +57,35 @@ export class AuthService {
     if (customer.otpExpiry < new Date()) {
       throw new BadRequestException('OTP expired');
     }
-    await this.customerRepository.update({ _id: customer._id }, { isVerified: true, $unset: { otp: "", otpExpiry: "" } });
+    await this.customerRepository.updateOne({ _id: customer._id }, { isVerified: true, $unset: { otp: "", otpExpiry: "" } });
     return customer;
   }
 
   async login(loginDto: LoginDto) {
-    const customerExists = await this.customerRepository.getOne({ email: loginDto.email });
-    if (!customerExists) {
+    const userExists = await this.userRepository.getOne({ email: loginDto.email });
+    if (!userExists) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if(customerExists.googleLogin){
+    if (userExists.role == 'Customer') {
+      const customerExists = await this.customerRepository.getOne({ email: loginDto.email });
+      if (!customerExists) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+      if (customerExists.googleLogin) {
         throw new ConflictException('please login with google')
       }
+    }
 
-    const isPasswordMatched = await bcrypt.compare(loginDto.password, customerExists.password as string);
+    const isPasswordMatched = await bcrypt.compare(loginDto.password, userExists.password as string);
     if (!isPasswordMatched) {
       throw new UnauthorizedException('Invalid credentials');
     }
     const token = this.jwtService.sign({
-      _id: customerExists._id,
-      email: customerExists.email,
-      role: customerExists.role,
-      userName: customerExists.userName,
+      _id: userExists._id,
+      email: userExists.email,
+      role: userExists.role,
+      userName: userExists.userName,
     }, {
       secret: this.configService.get('jwt').SECRET_KEY,
       expiresIn: '1d',
@@ -132,7 +139,7 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     const otp = generateOTP().toString();
-    await this.customerRepository.update({ _id: customer._id }, { otp, otpExpiry: new Date(Date.now() + 5 * 60 * 1000) });
+    await this.customerRepository.updateOne({ _id: customer._id }, { otp, otpExpiry: new Date(Date.now() + 5 * 60 * 1000) });
     await sendMail({
       from: process.env.EMAIL,
       to: customer.email,
@@ -141,7 +148,7 @@ export class AuthService {
             <p>Your reset password -otp- code is: <b><mark>${otp}</mark></b></p>
             <p><em>Your OTP expires in <strong>5 minutes</strong></em></p>`
     })
-    await this.customerRepository.update({ _id: customer._id }, { otp, otpExpiry: new Date(Date.now() + 5 * 60 * 1000) });
+    await this.customerRepository.updateOne({ _id: customer._id }, { otp, otpExpiry: new Date(Date.now() + 5 * 60 * 1000) });
     return {
       message: 'OTP sent successfully, check your email',
       success: true
@@ -160,7 +167,7 @@ export class AuthService {
       throw new BadRequestException('OTP expired');
     }
     const hashedPassword = await bcrypt.hash(resetPasswordDto.password, 10);
-    await this.customerRepository.update(
+    await this.customerRepository.updateOne(
       { _id: customer._id },
       { $set: { password: hashedPassword }, $unset: { otp: "", otpExpiry: "" } });
     return {

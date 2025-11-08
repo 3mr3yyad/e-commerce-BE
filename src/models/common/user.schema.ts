@@ -15,7 +15,8 @@ export class User{
     @Prop({type:String,required:true, unique:true})
     email: string;
 
-
+    @Prop({type:String})
+    password?: string;
 
     @Prop({type:String})
     otp?: string;

@@ -1,5 +1,5 @@
 import { Auth, User } from '@/common';
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -25,19 +25,26 @@ export class CategoryController {
     };
   }
 
-  @Get()
-  findAll() {
-    return this.categoryService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.categoryService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.categoryService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoryService.update(+id, updateCategoryDto);
+  @Put(':id')
+  @Auth(['Admin'])
+  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto, @User() user: any) {
+    const category = await this.categoryFactoryService.updateCategory(id, updateCategoryDto, user);
+    const updatedCategory = await this.categoryService.update(id, category);
+    return {
+      message: 'Category updated successfully',
+      success: true,
+      data: updatedCategory
+    };
   }
 
   @Delete(':id')

@@ -9,11 +9,11 @@ export class AbstractRepository<T> {
     public async getOne(filter: RootFilterQuery<T>, projection?: ProjectionType<T>, options?: QueryOptions<T>) {
         return this.model.findOne(filter, projection, options);
     }
-    public async update(
+    public async updateOne(
         filter: RootFilterQuery<T>,
-        update: UpdateQuery<T>,
-        options?: MongooseUpdateQueryOptions<T>) {
-        return this.model.updateOne(filter, update, options);
+        updateQuery: UpdateQuery<T>,
+        options?: QueryOptions<T>) {
+        return this.model.findOneAndUpdate(filter, updateQuery, options);
     }
     
 }
