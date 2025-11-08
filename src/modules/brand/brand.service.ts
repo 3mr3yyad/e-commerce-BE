@@ -1,14 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
 import { BrandRepository } from '@/models';
+import { message } from '@/common';
 
 @Injectable()
 export class BrandService {
-  constructor(private readonly brandRepository: BrandRepository) {}
-  create(brand: Brand) {
-    
-    this.brandRepository.create(brand);
+  constructor(private readonly brandRepository: BrandRepository) { }
+  async create(brand: Brand) {
+    const brandExists = await this.brandRepository.getOne({ slug: brand.slug })
+    if (brandExists) {
+      throw new ConflictException(message.brand.alreadyExists);
+    }
+
+    return await this.brandRepository.create(brand);
   }
 
   findAll() {

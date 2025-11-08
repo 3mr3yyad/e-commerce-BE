@@ -1,4 +1,4 @@
-import { Auth, User } from '@/common';
+import { Auth, message, User } from '@/common';
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -13,10 +13,14 @@ export class BrandController {
   ) {}
 
   @Post()
-  create(@Body() createBrandDto: CreateBrandDto, @User() user: any) {
+  async create(@Body() createBrandDto: CreateBrandDto, @User() user: any) {
     const brand = this.brandFactoryService.createBrand(createBrandDto, user);
-    this.brandService.create(brand);
-    return 
+    const createdBrand = await this.brandService.create(brand);
+    return {
+      success: true,
+      message: message.brand.created,
+      data: createdBrand
+    };
   }
 
   @Get()
