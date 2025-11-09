@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Auth, MESSAGE, User } from '@/common';
+import { Auth, MESSAGE, Public, User } from '@/common';
 import { ProductFactoryService } from './factory';
 
 @Controller('product')
@@ -24,23 +24,46 @@ export class ProductController {
     }
   }
 
+  @Public()
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  async findAll() {
+    const products = await this.productService.findAll();
+    return {
+      success: true,
+      message: "Products fetched successfully",
+      data: products
+    }
   }
 
+  @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const product = await this.productService.findOne(id);
+    return {
+      success: true,
+      message: "Product fetched successfully",
+      data: product
+    }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
-  }
+  // @Put(':id')
+  // async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  //   const product = this.productFactory.updateProduct(id, updateProductDto);
+  //   const updatedProduct = await this.productService.update(id, product);
+  //   return {
+  //     success: true,
+  //     message: "Product updated successfully",
+  //     data: updatedProduct
+  //   }
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
-  }
+  // @Delete(':id')
+  // async remove(@Param('id') id: string) {
+  //   const deletedProduct = await this.productService.remove(id);
+  //   return {
+  //     success: true,
+  //     message: "Product deleted successfully",
+  //     data: deletedProduct
+  //   }
+  // }
 }

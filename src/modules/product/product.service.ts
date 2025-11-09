@@ -21,19 +21,31 @@ export class ProductService {
     return this.productRepository.create(product);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll() {
+    const products = await this.productRepository.getMany({}, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
+    if (!products) {
+      throw new NotFoundException(MESSAGE.product.notFound);
+    }
+    return products;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    const product = await this.productRepository.getOne({ _id: id }, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
+    if (!product) {
+      throw new NotFoundException(MESSAGE.product.notFound);
+    }
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
+  // async update(id: string, product: Product) {
+  //   const productExists = await this.productRepository.getOne({ _id: id }, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
+  //   if (!productExists) {
+  //     throw new NotFoundException(MESSAGE.product.notFound);
+  //   }
+  //   return this.productRepository.updateOne({ _id: id }, product, { new: true });
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  }
+  // remove(id: string) {
+  //   return this.productRepository.deleteOne({ _id: id });
+  // }
 }

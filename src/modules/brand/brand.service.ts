@@ -17,16 +17,16 @@ export class BrandService {
     return await this.brandRepository.create(brand);
   }
 
-  findAll() {
-    const brands = this.brandRepository.getMany({}, {}, { populate: [{ path: 'createdby' }, { path: 'updatedby' }] });
+  async findAll() {
+    const brands = await this.brandRepository.getMany({}, {}, { populate: [{ path: 'createdby' }, { path: 'updatedby' }] });
     if (!brands) {
       throw new NotFoundException(MESSAGE.brand.notFound);
     }
     return brands;
   }
 
-  findOne(id: string | Types.ObjectId) {
-    const brand = this.brandRepository.getOne({ _id: id }, {}, { populate: [{ path: 'createdby' }, { path: 'updatedby' }] });
+  async findOne(id: string | Types.ObjectId) {
+    const brand = await this.brandRepository.getOne({ _id: id }, {}, { populate: [{ path: 'createdby' }, { path: 'updatedby' }] });
     if (!brand) {
       throw new NotFoundException(MESSAGE.brand.notFound);
     }
