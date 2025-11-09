@@ -14,7 +14,10 @@ export class RolesGuard implements CanActivate {
         }
         const request = context.switchToHttp().getRequest();
         const user = request.user;
-        const roles = this.reflector.getAllAndMerge(Roles, [context.getHandler(), context.getClass()]);
+        const roles = this.reflector.getAllAndMerge(Roles, [
+            context.getHandler(),
+            context.getClass()
+        ]);
         if (!roles.includes(user.role)) {
             throw new UnauthorizedException('not allowed');
         }

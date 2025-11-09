@@ -20,5 +20,10 @@ import { UserMongoModule } from '@/shared';
     CategoryFactoryService,
     JwtService
   ],
+  exports: [
+    CategoryService,
+    CategoryRepository,
+    CategoryFactoryService
+  ]
 })
 export class CategoryModule {}

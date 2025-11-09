@@ -22,5 +22,10 @@ import { JwtService } from '@nestjs/jwt';
     BrandRepository,
     JwtService
   ],
+  exports: [
+    BrandService,
+    BrandFactoryService,
+    BrandRepository
+  ]
 })
 export class BrandModule { }

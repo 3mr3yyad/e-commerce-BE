@@ -1,8 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
 import { BrandRepository } from '@/models';
-import { message } from '@/common';
+import { MESSAGE } from '@/common';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class BrandService {
@@ -10,25 +11,37 @@ export class BrandService {
   async create(brand: Brand) {
     const brandExists = await this.brandRepository.getOne({ slug: brand.slug })
     if (brandExists) {
-      throw new ConflictException(message.brand.alreadyExists);
+      throw new ConflictException(MESSAGE.brand.alreadyExists);
     }
 
     return await this.brandRepository.create(brand);
   }
 
   findAll() {
-    return `This action returns all brand`;
+    const brands = this.brandRepository.getMany({}, {}, { populate: [{ path: 'createdby' }, { path: 'updatedby' }] });
+    if (!brands) {
+      throw new NotFoundException(MESSAGE.brand.notFound);
+    }
+    return brands;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
+  findOne(id: string | Types.ObjectId) {
+    const brand = this.brandRepository.getOne({ _id: id }, {}, { populate: [{ path: 'createdby' }, { path: 'updatedby' }] });
+    if (!brand) {
+      throw new NotFoundException(MESSAGE.brand.notFound);
+    }
+    return brand;
   }
 
-  update(id: number, updateBrandDto: UpdateBrandDto) {
-    return `This action updates a #${id} brand`;
+  async update(id: string, brand: Brand) {
+    const brandExists = await this.brandRepository.getOne({ slug: brand.slug, _id: { $ne: id } });
+    if (brandExists) {
+      throw new ConflictException(MESSAGE.brand.alreadyExists);
+    }
+    return await this.brandRepository.updateOne({ _id: id }, brand, { new: true });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} brand`;
   }
 }

@@ -9,7 +9,7 @@ const generateMessages = (entity: string) => ({
     alreadyExists: `${entity} already exists`,
 })
 
-export const message = {
+export const MESSAGE = {
     category: {...generateMessages('Category')},
     brand: { ...generateMessages('Brand') },
     product: { ...generateMessages('Product') },
