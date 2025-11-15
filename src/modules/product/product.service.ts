@@ -6,7 +6,7 @@ import { CategoryService } from '../category/category.service';
 import { Product } from './entities/product.entity';
 import { MESSAGE } from '@/common';
 import { BrandService } from '../brand/brand.service';
-import { Types } from 'mongoose';
+import { DeleteResult, Types } from 'mongoose';
 
 @Injectable()
 export class ProductService {
@@ -39,7 +39,7 @@ export class ProductService {
     return products;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string | Types.ObjectId) {
     const product = await this.productRepository.getOne({ _id: id }, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
     if (!product) {
       throw new NotFoundException(MESSAGE.product.notFound);
@@ -48,10 +48,8 @@ export class ProductService {
   }
 
   async update(id: string | Types.ObjectId, product: Product) {
-    const productExists = await this.productRepository.getOne({ _id: id });
-    if (!productExists) {
-      throw new NotFoundException(MESSAGE.product.notFound);
-    }
+    
+    const productExists = await this.findOne(id);
 
     product.stock += productExists.stock;
 
@@ -70,7 +68,8 @@ export class ProductService {
     return await this.productRepository.updateOne({ _id: id }, product, { new: true });
   }
 
-  // remove(id: string) {
-  //   return this.productRepository.deleteOne({ _id: id });
-  // }
+  remove(id: string): Promise<DeleteResult> {
+    this.findOne(id);
+    return this.productRepository.delete({ _id: id });
+  }
 }

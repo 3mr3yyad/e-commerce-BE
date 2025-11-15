@@ -1,4 +1,4 @@
-import { Model, MongooseUpdateQueryOptions, ProjectionType, QueryOptions, RootFilterQuery, UpdateQuery } from "mongoose";
+import { DeleteResult, Model, ProjectionType, QueryOptions, RootFilterQuery, UpdateQuery } from "mongoose";
 
 export class AbstractRepository<T> {
     constructor(private readonly model: Model<T>) { }
@@ -22,5 +22,11 @@ export class AbstractRepository<T> {
         options?: QueryOptions<T>,
     ) {
         return this.model.find(filter, projection, options);
+    }
+
+    public async delete(
+        filter: RootFilterQuery<T>,
+    ): Promise<DeleteResult> {
+        return this.model.deleteOne(filter);
     }
 }

@@ -25,8 +25,8 @@ export class ProductController {
     }
   }
 
-  @Public()
   @Get()
+  @Public()
   async findAll() {
     const products = await this.productService.findAll();
     return {
@@ -36,8 +36,8 @@ export class ProductController {
     }
   }
 
-  @Public()
   @Get(':id')
+  @Public()
   async findOne(@Param('id') id: string) {
     const product = await this.productService.findOne(id);
     return {
@@ -57,13 +57,12 @@ export class ProductController {
     }
   }
 
-  // @Delete(':id')
-  // async remove(@Param('id') id: string) {
-  //   const deletedProduct = await this.productService.remove(id);
-  //   return {
-  //     success: true,
-  //     message: "Product deleted successfully",
-  //     data: deletedProduct
-  //   }
-  // }
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    await this.productService.remove(id);
+    return {
+      success: true,
+      message: "Product deleted successfully",
+    }
+  }
 }
