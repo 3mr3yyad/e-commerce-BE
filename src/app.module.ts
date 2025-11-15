@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Admin, adminSchema, Seller, SellerSchema, User, UserSchema } from './models';
 import { AuthFactoryService } from './modules/auth/factory';
 import { CustomerModule } from './modules/customer/customer.module';
+import { CouponModule } from './modules/coupon/coupon.module';
 
 @Module({
     imports: [
@@ -29,7 +30,8 @@ import { CustomerModule } from './modules/customer/customer.module';
         ProductModule,
         CategoryModule,
         BrandModule,
-        CustomerModule
+        CustomerModule,
+        CouponModule
     ],
     controllers: [AppController],
 

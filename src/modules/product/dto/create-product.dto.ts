@@ -1,4 +1,4 @@
-import { DiscountType } from "@/common";
+import { DiscountType, IsValidDiscount } from "@/common";
 import { IsArray, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from "class-validator";
 import { Types } from "mongoose";
 
@@ -25,8 +25,7 @@ export class CreateProductDto {
     @IsNotEmpty()
     price: number;
 
-    @IsNumber()
-    @IsOptional()
+    @IsValidDiscount()
     discountAmount: number;
 
     @IsEnum(DiscountType)
