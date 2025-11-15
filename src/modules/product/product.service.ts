@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ProductRepository } from 'src/models';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -68,8 +68,12 @@ export class ProductService {
     return await this.productRepository.updateOne({ _id: id }, product, { new: true });
   }
 
-  remove(id: string): Promise<DeleteResult> {
-    this.findOne(id);
-    return this.productRepository.delete({ _id: id });
+  async remove(id: string, user: any): Promise<DeleteResult> {
+    const productExists = await this.findOne(id);
+    if(user.role != 'Admin' || user._id.toString() != productExists.createdby.toString()) {
+      throw new UnauthorizedException("You are not authorized to delete this product");
+    }
+
+    return await this.productRepository.delete({ _id: id });
   }
 }

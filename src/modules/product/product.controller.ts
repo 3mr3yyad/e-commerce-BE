@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { Auth, MESSAGE, Public, User } from '@/common';
-import { ProductFactoryService } from './factory';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entities/product.entity';
+import { ProductFactoryService } from './factory';
+import { ProductService } from './product.service';
 
 @Controller('product')
 @Auth(['Admin', 'Seller'])
@@ -52,17 +51,16 @@ export class ProductController {
     const updatedProduct = await this.productService.update(id, product);
     return {
       success: true,
-      message: "Product updated successfully",
+      message: MESSAGE.product.updated,
       data: updatedProduct
     }
   }
-
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this.productService.remove(id);
+  async remove(@Param('id') id: string, @User() user: any) {
+    await this.productService.remove(id, user);
     return {
       success: true,
-      message: "Product deleted successfully",
+      message: MESSAGE.product.deleted,
     }
   }
 }

@@ -5,3 +5,4 @@ export * from './guards';
 export * from './decorators';
 export * from './constant';
 export * from './types';
+export * from './interceptors';
