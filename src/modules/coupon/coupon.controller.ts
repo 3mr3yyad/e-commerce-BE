@@ -2,14 +2,22 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CouponService } from './coupon.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
+import { CouponFactoryService } from './factory/coupon.factory';
+import { Auth, MESSAGE, User } from '@/common';
 
+@Auth(['Admin', 'Seller'])
 @Controller('coupon')
 export class CouponController {
-  constructor(private readonly couponService: CouponService) {}
+  constructor(
+    private readonly couponService: CouponService,
+    private readonly couponFactory: CouponFactoryService
+  ) { }
 
   @Post()
-  create(@Body() createCouponDto: CreateCouponDto) {
-    return this.couponService.create(createCouponDto);
+  async create(@Body() createCouponDto: CreateCouponDto, @User() user: any) {
+    const coupon = this.couponFactory.createCoupon(createCouponDto, user);
+    const createdCoupon = await this.couponService.create(coupon);
+    return {message: MESSAGE.coupon.created, createdCoupon};
   }
 
   @Get()

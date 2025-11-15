@@ -1,4 +1,5 @@
 import { DiscountType, IsValidDiscount } from "@/common";
+import { Transform } from "class-transformer";
 import { IsArray, IsBoolean, IsDate, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsString, Length, MinDate } from "class-validator";
 import { Types } from "mongoose";
 
@@ -18,14 +19,16 @@ export class CreateCouponDto {
     @IsEnum(DiscountType)
     discountType: DiscountType;
 
+    @Transform(({ value }) => new Date(value))
     @IsDate()
     @IsNotEmpty()
     @MinDate(new Date(Date.now() - 24 * 60 * 60 * 1000))
     startDate: Date;
 
+    @Transform(({ value }) => new Date(value))
     @IsDate()
     @IsNotEmpty()
-    @MinDate(new Date(Date.now() - 24 * 60 * 60 * 1000))
+    @MinDate(new Date(Date.now()))
     endDate: Date;
 
     @IsBoolean()

@@ -4,7 +4,10 @@ import { SchemaTypes, Types } from "mongoose";
 
 @Schema({ timestamps: true })
 export class CouponUser {
+    @Prop({type: SchemaTypes.ObjectId, ref: 'User'})
     customerId: Types.ObjectId;
+    
+    @Prop({type: Number, default: 0})
     count: number;
 }
 

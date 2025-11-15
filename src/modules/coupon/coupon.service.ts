@@ -1,11 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
+import { Coupon } from './entities/coupon.entity';
+import { CouponRepository } from '@/models';
+import { MESSAGE } from '@/common';
 
 @Injectable()
 export class CouponService {
-  create(createCouponDto: CreateCouponDto) {
-    return 'This action adds a new coupon';
+  constructor(private readonly couponRepository: CouponRepository) {}
+  async create(coupon: Coupon) {
+    const couponExists = await this.couponRepository.getOne({ code: coupon.code });
+    if (couponExists) {
+      throw new ConflictException(MESSAGE.coupon.alreadyExists);
+    }
+    return await this.couponRepository.create(coupon);
   }
 
   findAll() {
