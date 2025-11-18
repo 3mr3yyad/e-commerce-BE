@@ -17,6 +17,9 @@ export class Brand {
     @Prop({type:SchemaTypes.ObjectId, ref:'Admin'})
     updatedby: Types.ObjectId;
 
+    @Prop({type: Boolean, default: false})
+    deleted: boolean;
+
     logo: Object; // todo
 
 }

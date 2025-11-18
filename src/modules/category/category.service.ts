@@ -19,12 +19,13 @@ export class CategoryService {
     return await this.categoryRepository.create(category);
   }
 
-  findAll() {
-    const categories = this.categoryRepository.getMany({}, {},
+  async findAll() {
+    const categories = await this.categoryRepository.getMany({deleted:false}, {},
       {
         populate: [{ path: 'createdby' }, { path: 'updatedby' }],
       });
-    if (!categories) {
+
+    if (!categories || categories.length == 0) {
       throw new NotFoundException(MESSAGE.category.notFound);
     }
     return categories;
@@ -32,7 +33,7 @@ export class CategoryService {
 
   async findOne(id: string | Types.ObjectId) {
     const category = await this.categoryRepository.getOne({ _id: id },{},{populate: [{path:'createdby'}, {path:'updatedby'}] });
-    if (!category) {
+    if (!category || category.deleted) {
       throw new NotFoundException(MESSAGE.category.notFound);
     }
     return category;
@@ -40,13 +41,17 @@ export class CategoryService {
 
   async update(id: string, category: Category) {
     const categoryExists = await this.categoryRepository.getOne({ slug: category.slug, _id: { $ne: id } });
-    if (categoryExists) {
-      throw new ConflictException(MESSAGE.category.alreadyExists);
+    if (!categoryExists || category.deleted) {
+      throw new NotFoundException(MESSAGE.category.notFound);
     }
     return await this.categoryRepository.updateOne({ _id: id }, category, { new: true });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string | Types.ObjectId) {
+    const category = await this.categoryRepository.getOne({ _id: id });
+    if (!category || category.deleted) {
+      throw new NotFoundException(MESSAGE.category.notFound);
+    }
+    return await this.categoryRepository.updateOne({ _id: id }, { deleted: true });
   }
 }

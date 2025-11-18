@@ -21,6 +21,7 @@ export class CategoryFactoryService {
         category.createdby = user._id;
         category.updatedby = user._id;
         category.logo = createCategoryDto.logo;
+        category.deleted = false;
         return category;
     }
 
@@ -38,6 +39,7 @@ export class CategoryFactoryService {
         });
         category.logo = updateCategoryDto.logo || oldCategory.logo;
         category.updatedby = user._id;
+        category.deleted = false;
         return category;
     }
 }

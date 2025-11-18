@@ -62,6 +62,9 @@ export class Product {
     @Prop({type: [String]})
     sizes: string[];
 
+    @Prop({type: Boolean, default: false})
+    deleted: boolean;
+
     images: object[];
 }
 
