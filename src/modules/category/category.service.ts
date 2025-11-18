@@ -1,4 +1,4 @@
-import { CategoryRepository } from '@/models';
+import { BrandRepository, CategoryRepository, ProductRepository } from '@/models';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Category } from './entities/category.entity';
 import { Types } from 'mongoose';
@@ -7,7 +7,9 @@ import { MESSAGE } from '@/common';
 @Injectable()
 export class CategoryService {
   constructor(
-    private readonly categoryRepository: CategoryRepository
+    private readonly categoryRepository: CategoryRepository,
+    private readonly productRepository: ProductRepository,
+    private readonly brandRepository: BrandRepository,
   ) { }
   async create(category: Category) {
     const categoryExists = await this.categoryRepository.getOne({ slug: category.slug });
@@ -52,6 +54,10 @@ export class CategoryService {
     if (!category || category.deleted) {
       throw new NotFoundException(MESSAGE.category.notFound);
     }
-    return await this.categoryRepository.updateOne({ _id: id }, { deleted: true });
+    await this.categoryRepository.updateOne({ _id: id }, { deleted: true });
+    await this.productRepository.updateMany({ categoryId: id }, { deleted: true });
+    await this.brandRepository.updateMany({ categoryId: id }, { deleted: true });
+
+    return true;
   }
 }
