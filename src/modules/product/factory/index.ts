@@ -24,6 +24,7 @@ export class ProductFactoryService {
         product.colors = createProductDto.colors;
         product.sizes = createProductDto.sizes;
         // product.images = createProductDto.images;
+        product.deleted = false;
         return product;
     }
 }

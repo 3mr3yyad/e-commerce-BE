@@ -57,7 +57,12 @@ export class BrandController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.brandService.remove(id);
+  async remove(@Param('id') id: string) {
+    const brand = await this.brandService.remove(id);
+    return {
+      success: true,
+      message: "Brand deleted successfully",
+      data: brand
+    };
   }
 }

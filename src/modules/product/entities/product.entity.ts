@@ -19,6 +19,7 @@ export class Product {
     colors: string[];
     sizes: string[];
     images: object[];
+    deleted: boolean;
 }
 
 

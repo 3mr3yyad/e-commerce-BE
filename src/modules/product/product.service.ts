@@ -32,16 +32,16 @@ export class ProductService {
   }
 
   async findAll() {
-    const products = await this.productRepository.getMany({}, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
-    if (!products) {
+    const products = await this.productRepository.getMany({deleted:false}, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
+    if (!products || products.length == 0) {
       throw new NotFoundException(MESSAGE.product.notFound);
     }
     return products;
   }
 
   async findOne(id: string | Types.ObjectId) {
-    const product = await this.productRepository.getOne({ _id: id }, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
-    if (!product) {
+    const product = await this.productRepository.getOne({ _id: id, deleted: false }, {}, { populate: [{ path: 'category' }, { path: 'brand' }] });
+    if (!product || product.deleted) {
       throw new NotFoundException(MESSAGE.product.notFound);
     }
     return product;
