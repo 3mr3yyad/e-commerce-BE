@@ -13,6 +13,7 @@ export class BrandFactoryService {
         brand.slug = slugify(createBrandDto.name, { lower: true });
         brand.createdby = user._id;
         brand.updatedby = user._id;
+        brand.deleted = false;
         brand.logo = createBrandDto.logo;
 
         return brand;

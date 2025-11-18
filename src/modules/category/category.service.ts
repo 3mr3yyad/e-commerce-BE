@@ -9,7 +9,6 @@ export class CategoryService {
   constructor(
     private readonly categoryRepository: CategoryRepository,
     private readonly productRepository: ProductRepository,
-    private readonly brandRepository: BrandRepository,
   ) { }
   async create(category: Category) {
     const categoryExists = await this.categoryRepository.getOne({ slug: category.slug });
@@ -56,7 +55,6 @@ export class CategoryService {
     }
     await this.categoryRepository.updateOne({ _id: id }, { deleted: true });
     await this.productRepository.updateMany({ categoryId: id }, { deleted: true });
-    await this.brandRepository.updateMany({ categoryId: id }, { deleted: true });
 
     return true;
   }

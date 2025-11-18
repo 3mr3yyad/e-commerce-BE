@@ -7,4 +7,5 @@ export class Brand {
     createdby: Types.ObjectId;
     updatedby: Types.ObjectId;
     logo: Object;
+    deleted: boolean;
 }
