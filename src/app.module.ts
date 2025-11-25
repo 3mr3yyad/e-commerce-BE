@@ -13,6 +13,7 @@ import { AuthFactoryService } from './modules/auth/factory';
 import { CustomerModule } from './modules/customer/customer.module';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { CartModule } from './modules/cart/cart.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
     imports: [
@@ -33,7 +34,8 @@ import { CartModule } from './modules/cart/cart.module';
         BrandModule,
         CustomerModule,
         CouponModule,
-        CartModule
+        CartModule,
+        OrderModule
     ],
     controllers: [AppController],
 

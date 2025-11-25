@@ -38,7 +38,10 @@ export class OrderProduct {
     price: number;
 
     @Prop({ type: Number })
-    discount: number;
+    discountAmount: number;
+
+    @Prop({ type: String, enum: DiscountType })
+    discountType: DiscountType;
 
     @Prop({ type: Number, required: true })
     totalPrice: number;
@@ -48,6 +51,9 @@ export class OrderProduct {
 export class OrderCopoun {
     @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'Coupon' })
     copounId: Types.ObjectId;
+
+    @Prop({type: String, required: true})
+    code: string;
 
     @Prop({ type: Number, required: true })
     discountAmount: number;

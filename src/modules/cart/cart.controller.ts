@@ -19,6 +19,15 @@ export class CartController {
     }
   }
 
+  @Get()
+  findOne(@User()user:any) {
+    const cart = this.cartService.findOne(user);
+    return {
+      success: true,
+      data: cart
+    }
+  }
+
   @Put('remove/:productId')
   removeFromCart(@Param('productId') productId: string, @User()user:any) {
     const cart = this.cartService.removeFromCart(productId, user);

@@ -48,10 +48,17 @@ export class CartService {
         cart.products[index].quantity = addToCartDto.quantity
       }
     }
-    
 
     await cart.save()
     return cart
+  }
+
+  async findOne(user: any) {
+    const cartExist = await this.cartRepository.getOne({ userId: user._id })
+    if(!cartExist){
+      throw new NotFoundException(MESSAGE.product.notFound)
+    }
+    return cartExist
   }
 
   async removeFromCart(productId: string | Types.ObjectId, user:any) {
