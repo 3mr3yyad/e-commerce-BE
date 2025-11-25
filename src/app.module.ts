@@ -12,6 +12,7 @@ import { Admin, adminSchema, Seller, SellerSchema, User, UserSchema } from './mo
 import { AuthFactoryService } from './modules/auth/factory';
 import { CustomerModule } from './modules/customer/customer.module';
 import { CouponModule } from './modules/coupon/coupon.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
     imports: [
@@ -31,7 +32,8 @@ import { CouponModule } from './modules/coupon/coupon.module';
         CategoryModule,
         BrandModule,
         CustomerModule,
-        CouponModule
+        CouponModule,
+        CartModule
     ],
     controllers: [AppController],
 

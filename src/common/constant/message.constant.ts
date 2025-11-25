@@ -18,4 +18,5 @@ export const MESSAGE = {
     seller: { ...generateMessages('Seller') },
     admin: { ...generateMessages('Admin') },
     customer: { ...generateMessages('Customer') },
+    cart: { ...generateMessages('Cart') },
 }
