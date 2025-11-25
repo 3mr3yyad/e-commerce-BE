@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
@@ -15,27 +15,26 @@ export class CartController {
     return {
       success: true,
       message: MESSAGE.cart.updated,
-      cart
+      data: cart
     }
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.cartService.findAll();
-  // }
+  @Put('remove/:productId')
+  removeFromCart(@Param('productId') productId: string, @User()user:any) {
+    const cart = this.cartService.removeFromCart(productId, user);
+    return {
+      success: true,
+      message: MESSAGE.cart.updated,
+      data: cart
+    }
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.cartService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-  //   return this.cartService.update(+id, updateCartDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.cartService.remove(+id);
-  // }
+  @Delete()
+  async clearCart(@User()user:any) {
+    await this.cartService.clearCart(user);
+    return {
+      success: true,
+      message: MESSAGE.cart.deleted,
+    }
+  }
 }

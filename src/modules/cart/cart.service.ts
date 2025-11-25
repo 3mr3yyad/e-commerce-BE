@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { AddToCartDto } from './dto/add-to-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
-import { ProductService } from '../product/product.service';
+import { MESSAGE } from '@/common';
 import { CartRepository } from '@/models';
-import { ObjectId } from 'mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ProductService } from '../product/product.service';
+import { AddToCartDto } from './dto/add-to-cart.dto';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class CartService {
@@ -42,26 +42,34 @@ export class CartService {
         quantity: addToCartDto.quantity
       })
     } else {
-      cart.products[index].quantity = addToCartDto.quantity
+      if(addToCartDto.quantity = 0){
+        await this.removeFromCart(addToCartDto.productId, user)
+      } else {
+        cart.products[index].quantity = addToCartDto.quantity
+      }
     }
+    
 
     await cart.save()
     return cart
   }
 
-  // findAll() {
-  //   return `This action returns all cart`;
-  // }
+  async removeFromCart(productId: string | Types.ObjectId, user:any) {
+    const cart = await this.cartRepository.updateOne(
+      { userId: user._id, "products.productId": productId },
+      { $pull: { products: { productId } } }
+    )
+    if(!cart){
+      throw new NotFoundException(MESSAGE.product.notFound)
+    }
+    return true
+  }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} cart`;
-  // }
-
-  // update(id: number, updateCartDto: UpdateCartDto) {
-  //   return `This action updates a #${id} cart`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} cart`;
-  // }
+  async clearCart(user:any) {
+    await this.cartRepository.updateOne(
+      { userId: user._id },
+      { $set: { products: [] } }
+    )
+    return true
+  }
 }
